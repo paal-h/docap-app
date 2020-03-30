@@ -31,12 +31,12 @@ spec:
   volumes:
       - name: kaniko-docker-config
       projected:
-      sources:
-      - secret:
-      name: harbor-docap-key
-        items:
-          - key: .dockerconfigjson
-            path: config.json
+        sources:
+        - secret:
+        name: harbor-docap-key
+          items:
+            - key: .dockerconfigjson
+              path: config.json
 """
                 }
             }
