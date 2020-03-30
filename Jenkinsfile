@@ -43,6 +43,7 @@ spec:
 
             steps {
                 script {
+                    sh 'echo $BUILD_ID > VERSION.txt'
                     sh """/kaniko/executor -f `pwd`/Dockerfile \
                        -c `pwd` \
                        --insecure \
@@ -71,7 +72,6 @@ spec:
             }
             //replace __version__ with the build number and then apply to our cluster
             steps {
-                sh 'echo $BUILD_ID > VERSION.txt'
                 sh "sh -c \"sed s/__VERSION__/${env.BUILD_ID}/g app-deploy.yml | kubectl apply -f -\""
             }
         }
