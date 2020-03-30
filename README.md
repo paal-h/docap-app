@@ -19,12 +19,3 @@ Run:
 ```sh
 FLASK_APP=app.py flask run
 ```
-
-Test
-```python 
-# The json microservice version
-@app.route('/api/hello/')
-@app.route('/api/hello/<username>')
-def api(username='World!'):
-return jsonify({'Hello': username})
-```
