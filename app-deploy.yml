@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+name: app
+  namespace: docap
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      run: app
+  template:
+    metadata:
+      labels:
+        run: app
+    spec:
+      containers:
+      - image: harbor.docap.io/docap/app:__VERSION__
+        imagePullPolicy: IfNotPresent
+        name: app
+        ports:
+        - containerPort: 5000
+          protocol: TCP
+      imagePullSecrets:
+        - name: harbor-docap-key

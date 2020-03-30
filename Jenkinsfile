@@ -61,7 +61,19 @@ spec:
         //Documentation generation goes here
 
         //Deploy goes here
-        
+        stage('Deploy') {
+            agent {
+                kubernetes {
+                    label 'jenkins-deploy'
+                    defaultContainer 'kubectl'
+                    containerTemplate(name: 'kubectl', image: "lachlanevenson/k8s-kubectl:v1.13.0", ttyEnabled: true, command: 'cat')
+                }
+            }
+            //replace __version__ with the build number and then apply to our cluster
+            steps {
+                sh "sed s/__VERSION__/${env.BUILD_ID}/g app-deploy.yml | kubectl apply -f -"
+            }
+        }
         //Performance testing goes here
         } //stages
 } //pipeline
