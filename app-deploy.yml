@@ -22,5 +22,11 @@ spec:
         ports:
         - containerPort: 5000
           protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: /api/version
+            port: 5000
+          initialDelaySeconds: 3
+          periodSeconds: 3
       imagePullSecrets:
         - name: harbor-docap-key
