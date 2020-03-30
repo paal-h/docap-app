@@ -10,6 +10,8 @@ RUN pip install -r requirements-dev.txt
 COPY app.py .
 # Copy the HTML page templates directory
 COPY templates templates
+# Copy the version number into the container
+COPY VERSION.txt .
 # Our code runs on port 5000, so allow access
 EXPOSE 5000
 # Set the FLASK_APP environment variable
