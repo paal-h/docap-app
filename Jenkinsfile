@@ -13,13 +13,43 @@ pipeline {
                 kubernetes {
                     label 'jenkinsrun'
                     defaultContainer 'builder'
-                    containerTemplate(name: 'builder', image: "python:3.8-slim-buster", ttyEnabled: true, command: 'cat')
+                    yaml """
+kind: Pod
+metadata:
+  name: kaniko
+spec:
+  containers:
+  - name: builder
+    image: gcr.io/kaniko-project/executor:debug
+    imagePullPolicy: Always
+    command:
+    - /busybox/cat
+    tty: true
+    volumeMounts:
+      - name: kaniko-docker-config
+        mountPath: /kaniko/.docker
+  volumes:
+      - name: kaniko-docker-config
+      projected:
+      sources:
+      - secret:
+      name: harbor-docap-key
+        items:
+          - key: .dockerconfigjson
+            path: config.json
+"""
                 }
             }
 
             steps {
                 script {
-                    sh "echo dont build, just run"
+                    sh """/kaniko/executor -f `pwd`/Dockerfile \
+                       -c `pwd` \
+                       --insecure \
+                       --skip-tls-verify \
+                       --cache=true \
+                       --destination=harbor.docap.io/docap/app:${env.BUILD_ID}
+                       """
                 }
             } //steps
 
