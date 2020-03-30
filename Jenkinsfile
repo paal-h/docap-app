@@ -29,11 +29,11 @@ spec:
       - name: kaniko-docker-config
         mountPath: /kaniko/.docker
   volumes:
-      - name: kaniko-docker-config
-      projected:
-        sources:
-        - secret:
-        name: harbor-docap-key
+  - name: kaniko-docker-config
+    projected:
+      sources:
+      - secret:
+          name: harbor-docap-key
           items:
             - key: .dockerconfigjson
               path: config.json
