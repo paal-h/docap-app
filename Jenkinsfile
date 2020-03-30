@@ -71,7 +71,7 @@ spec:
             }
             //replace __version__ with the build number and then apply to our cluster
             steps {
-                sh "sed s/__VERSION__/${env.BUILD_ID}/g app-deploy.yml | kubectl apply -f -"
+                sh "sh -c \"sed s/__VERSION__/${env.BUILD_ID}/g app-deploy.yml | kubectl apply -f -\""
             }
         }
         //Performance testing goes here
