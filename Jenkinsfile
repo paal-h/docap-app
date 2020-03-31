@@ -60,7 +60,43 @@ spec:
         //SonarQube goes here
 
         //Documentation generation goes here
-
+        stage('Documentation') {
+            agent {
+                kubernetes {
+                    label 'jenkins-appy'
+                    defaultContainer 'appy'
+yaml """
+apiVersion: v1
+kind: Pod
+metadata:
+  name: appy
+spec:
+  containers:
+  - name: appy
+    image: harbor.docap.io/docap/app:${env.BUILD_ID}
+    tty: true
+    imagePullPolicy: Always
+  imagePullSecrets:
+  - name: harbor-docap-key
+"""
+                    }
+                }
+            steps {
+                //generate documentation in html format and put in a directory called output
+                // only install dev requirements in temporary container
+                sh 'pip install -r requirements-dev.txt'
+                sh 'sphinx-build -b html . output'
+                //tell jenkins we made an HTML report and to publish it
+                publishHTML target: [
+                    allowMissing: false,
+                    alwaysLinkToLastBuild: false,
+                    keepAll: true,
+                    reportDir: 'output',
+                    reportFiles: 'index.html',
+                    reportName: 'Sphinx'
+                ]
+            }
+        }
         //Deploy goes here
         stage('Deploy') {
             input {
@@ -80,5 +116,5 @@ spec:
             }
         }
         //Performance testing goes here
-        } //stages
+    } //stages
 } //pipeline

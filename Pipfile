@@ -9,6 +9,7 @@ flask-bootstrap4 = "*"
 
 [dev-packages]
 pylint = "*"
+sphinx = "*"
 
 [requires]
 python_version = "3.7"
