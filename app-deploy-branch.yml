@@ -50,14 +50,14 @@ spec:
 # Create / Update ingress for app
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
-  metadata:
-    name: app-__BRANCH__
-    namespace: docap
-    annotations:
-      kubernetes.io/ingress.class: "nginx"
-      nginx.ingress.kubernetes.io/ssl-redirect: "false"
-      nginx.ingress.kubernetes.io/add-base-url: "true"
-      nginx.ingress.kubernetes.io/proxy-body-size: "0"
+metadata:
+  name: app-__BRANCH__
+  namespace: docap
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/add-base-url: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
 spec:
   rules:
   - host: app.__BRANCH__.docap.io
