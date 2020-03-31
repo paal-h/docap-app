@@ -45,34 +45,36 @@ spec:
             }
 
             steps {
-                if(env.BRANCH_NAME == "master") {
-                //write the version number to a file which gets copied into the container
-                    sh 'echo $BUILD_ID > VERSION.txt'
-                    sh """/kaniko/executor -f `pwd`/Dockerfile \
-                       -c `pwd` \
-                       --insecure \
-                       --skip-tls-verify \
-                       --single-snapshot --destination=harbor.docap.io/docap/app:${build_tag}
-                       """
-                } else {
-                    //write the branch name and version number to a file which gets copied into the container
-                    sh 'echo $BRANCH_NAME.$BUILD_ID > VERSION.txt'
-                    sh 'echo $BRANCH_NAME > BRANCH.txt'
-                    // remove the feature/ if this is part of branch name, using + as sed separator
-                    sh "sed -i s+feature/++g VERSION.txt"
-                    sh "sed -i s+feature/++g BRANCH.txt"
-                    // replace all / with _ in branch name, using + as sed separator
-                    sh "sed -i s+/+_+g VERSION.txt"
-                    sh "sed -i s+/+_+g BRANCH.txt"
-                    build_tag = readFile('VERSION.txt').trim()
-                    branch_label = readFile('BRANCH.txt').trim()
-                    sh """/kaniko/executor -f `pwd`/Dockerfile \
-                       -c `pwd` \
-                       --insecure \
-                       --skip-tls-verify \
-                       --single-snapshot \
-                       --destination=harbor.docap.io/docap/app:${build_tag}
-                       """
+                script {
+                    if(env.BRANCH_NAME == "master") {
+                    //write the version number to a file which gets copied into the container
+                        sh 'echo $BUILD_ID > VERSION.txt'
+                        sh """/kaniko/executor -f `pwd`/Dockerfile \
+                           -c `pwd` \
+                           --insecure \
+                           --skip-tls-verify \
+                           --single-snapshot --destination=harbor.docap.io/docap/app:${build_tag}
+                           """
+                    } else {
+                        //write the branch name and version number to a file which gets copied into the container
+                        sh 'echo $BRANCH_NAME.$BUILD_ID > VERSION.txt'
+                        sh 'echo $BRANCH_NAME > BRANCH.txt'
+                        // remove the feature/ if this is part of branch name, using + as sed separator
+                        sh "sed -i s+feature/++g VERSION.txt"
+                        sh "sed -i s+feature/++g BRANCH.txt"
+                        // replace all / with _ in branch name, using + as sed separator
+                        sh "sed -i s+/+_+g VERSION.txt"
+                        sh "sed -i s+/+_+g BRANCH.txt"
+                        build_tag = readFile('VERSION.txt').trim()
+                        branch_label = readFile('BRANCH.txt').trim()
+                        sh """/kaniko/executor -f `pwd`/Dockerfile \
+                           -c `pwd` \
+                           --insecure \
+                           --skip-tls-verify \
+                           --single-snapshot \
+                           --destination=harbor.docap.io/docap/app:${build_tag}
+                           """
+                    }
                 }
             } //steps
         } //stage(build)
