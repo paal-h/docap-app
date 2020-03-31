@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-__BRANCH__
+  namespace: docap
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      run: app-__BRANCH__
+  template:
+    metadata:
+      labels:
+        run: app-__BRANCH__
+    spec:
+      containers:
+      - image: harbor.docap.io/docap/app:__VERSION__
+        imagePullPolicy: IfNotPresent
+        name: app-__BRANCH__
+        ports:
+        - containerPort: 5000
+          protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: /api/version
+            port: 5000
+          initialDelaySeconds: 3
+          periodSeconds: 3
+      imagePullSecrets:
+        - name: harbor-docap-key
+---
+# Create service of NodePort type
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-__BRANCH__
+  namespace: docap
+spec:
+  selector:
+    run: app-__BRANCH__
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 5000
+  type: NodePort
+---
+# Create / Update ingress for app
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+  metadata:
+    name: app-__BRANCH__
+    namespace: docap
+    annotations:
+      kubernetes.io/ingress.class: "nginx"
+      nginx.ingress.kubernetes.io/ssl-redirect: "false"
+      nginx.ingress.kubernetes.io/add-base-url: "true"
+      nginx.ingress.kubernetes.io/proxy-body-size: "0"
+spec:
+  rules:
+  - host: app.__BRANCH__.docap.io
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: app-__BRANCH__
+          servicePort: 5000
