@@ -184,7 +184,7 @@ spec:
                         echo "Deploying branch - ${BRANCH_NAME}"
                         //replace __BRANCH__and __VERSION__ with the build_tag and build_label and then apply to our cluster
                         sh "sed -i s/__BRANCH__/${branch_label}/g app-deploy-branch.yml"
-                        sh "sed s/__VERSION__/${build_tag}/g app-deploy-branch.yml | kubectl apply -f -"
+                        sh "sh -c \"sed s/__VERSION__/${build_tag}/g app-deploy-branch.yml | kubectl apply -f -\""
                     }
                 }
             }
