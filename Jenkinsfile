@@ -99,10 +99,10 @@ spec:
         }
         //Deploy goes here
         stage('Deploy') {
-            input {
-                message "Should we deploy?"
-                ok "Yes, please, that'd be really good"
-            }
+            //input {
+            //    message "Should we deploy?"
+            //    ok "Yes, please, that'd be really good"
+            //}
             agent {
                 kubernetes {
                     label 'jenkins-deploy'
