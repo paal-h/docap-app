@@ -39,7 +39,8 @@ metadata:
   namespace: docap
 spec:
   selector:
-    run: app-__BRANCH__
+    matchLabels:
+      run: app-__BRANCH__
   ports:
   - name: http
     port: 80
