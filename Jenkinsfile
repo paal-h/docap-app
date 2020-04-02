@@ -111,6 +111,44 @@ spec:
                         sh 'pylint app.py'
                     }
                 } //stage(static analysis)
+                //Functional testing goes here
+                stage('Functional Tests') {
+                  //Run this code within our container for this build
+                  agent {
+                    kubernetes {
+                    label 'jenkins-test'
+                    defaultContainer 'appy'
+                    yaml """
+apiVersion: v1
+kind: Pod
+metadata:
+name: appy
+spec:
+containers:
+- name: appy
+image: harbor.docap.io/docap/app:${build_tag}
+tty: true
+command:
+- cat
+imagePullPolicy: Always
+imagePullSecrets:
+- name: harbor-docap-key
+"""
+                  }
+                }
+                steps {
+                  // first install development tools dependencies
+                  sh 'pip install -r requirements-dev.txt'
+                  sh 'py.test --disable-pytest-warnings --junitxml results.xml functionaltest.py'
+                }
+                //Tell Jenkins about the test report
+                post {
+                  always {
+                    junit '*.xml'
+                  }
+                }
+              } //stage(functional tests)                    
+
         //SonarQube goes here
             }
         }
