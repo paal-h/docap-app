@@ -184,7 +184,7 @@ spec:
                     }
                   }
                 } //stage(BDD Tests)
-
+            }
         //SonarQube goes here
         stage('Sonarqube') {
           agent {
@@ -221,7 +221,7 @@ spec:
         }
 
 
-            }
+            
         }
         //Documentation generation goes here
         stage('Documentation') {
