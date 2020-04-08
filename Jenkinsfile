@@ -186,6 +186,41 @@ spec:
                 } //stage(BDD Tests)
 
         //SonarQube goes here
+        stage('Sonarqube') {
+          agent {
+            kubernetes {
+              label 'jenkins-sonar'
+              defaultContainer 'sonar'
+              // containerTemplate(name: 'sonar', image: "jenkins/jnlp-slave:alpine", ttyEnabled: true, command: 'cat')
+              yaml """
+apiVersion: v1
+kind: Pod
+metadata:
+  name: sonarqube
+spec:
+  containers:
+  - name: sonar
+  image: jenkins/jnlp-slave:alpine
+  tty: true
+  command:
+  - cat
+"""
+            }
+          }
+          environment {
+            scannerHome = tool 'my-sonar-scanner'
+          }
+          steps {
+            withSonarQubeEnv('sonarqube-server') {
+              sh "${scannerHome}/bin/sonar-scanner"
+            }
+            timeout(time: 10, unit: 'MINUTES') {
+              waitForQualityGate abortPipeline: true
+            }
+          }
+        }
+
+
             }
         }
         //Documentation generation goes here
