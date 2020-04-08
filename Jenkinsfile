@@ -159,17 +159,17 @@ spec:
 apiVersion: v1
 kind: Pod
 metadata:
-name: appy
+  name: appy
 spec:
-containers:
-- name: appy
-image: harbor.docap.io/docap/app:${build_tag}
-tty: true
-command:
-- cat
-imagePullPolicy: Always
-imagePullSecrets:
-- name: harbor-docap-key
+  containers:
+  - name: appy
+    image: harbor.docap.io/docap/app:${build_tag}
+    tty: true
+    command:
+    - cat
+    imagePullPolicy: Always
+  imagePullSecrets:
+  - name: harbor-docap-key
 """
                     }
                   }
