@@ -184,7 +184,8 @@ spec:
                     }
                   }
                 } //stage(BDD Tests)
-            
+            }
+        }
         //SonarQube goes here
         stage('Sonarqube') {
           agent {
@@ -200,10 +201,13 @@ metadata:
 spec:
   containers:
   - name: sonar
-  image: jenkins/jnlp-slave:alpine
-  tty: true
-  command:
-  - cat
+    image: jenkins/jnlp-slave:alpine
+    tty: true
+    command:
+    - cat
+    imagePullPolicy: Always
+  imagePullSecrets:
+  - name: harbor-docap-key
 """
             }
           }
@@ -218,12 +222,6 @@ spec:
               waitForQualityGate abortPipeline: true
             }
           }
-        }
-
-
-            
-
-            }
         }
         //Documentation generation goes here
         stage('Documentation') {
