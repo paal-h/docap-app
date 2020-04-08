@@ -134,20 +134,56 @@ spec:
   imagePullSecrets:
     - name: harbor-docap-key
 """
+                    }
                   }
-                }
-                steps {
-                  // first install development tools dependencies
-                  sh 'pip install -r requirements-dev.txt'
-                  sh 'py.test --disable-pytest-warnings --junitxml results.xml functionaltest.py'
-                }
-                //Tell Jenkins about the test report
-                post {
-                  always {
-                    junit '*.xml'
+                  steps {
+                    // first install development tools dependencies
+                    sh 'pip install -r requirements-dev.txt'
+                    sh 'py.test --disable-pytest-warnings --junitxml results.xml functionaltest.py'
                   }
-                }
-              } //stage(functional tests)                    
+                  //Tell Jenkins about the test report
+                  post {
+                    always {
+                      junit '*.xml'
+                    }
+                  }
+                } //stage(functional tests)                    
+
+                //BDD testing goes here
+                stage('BDD Tests') {
+                  agent {
+                    kubernetes {
+                      label 'jenkins-bdd'
+                      defaultContainer 'appy'
+                      yaml """
+apiVersion: v1
+kind: Pod
+metadata:
+  name: appy
+spec:
+  containers:
+  - name: appy
+    image: harbor.docap.io/docap/app:${build_tag}
+    tty: true
+    command:
+    - cat
+    imagePullPolicy: Always
+  imagePullSecrets:
+  - name: harbor-docap-key
+"""
+                    }
+                  }
+                  steps {
+                    // first install development tools dependencies
+                    sh 'pip install -r requirements-dev.txt'
+                    sh 'behave --junit --junit-directory .'
+                  }
+                  post {
+                    always {
+                      junit '*.xml'
+                    }
+                  }
+                } //stage(BDD Tests)
 
         //SonarQube goes here
             }
